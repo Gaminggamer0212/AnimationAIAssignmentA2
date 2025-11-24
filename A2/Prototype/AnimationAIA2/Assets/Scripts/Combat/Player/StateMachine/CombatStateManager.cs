@@ -34,11 +34,21 @@ public class CombatStateManager : MonoBehaviour
     private float bufferTime = 0f;
     private float bufferDurationTimer = 1f;
     
+    [Header ("Dodge Stuff")]
+    public float DodgeCoolDown = 1f;
+    public float DodgeCoolDownTimer = 0f;
+    private float lastDodgeTime = 0f;
+    
+    [Header ("Kunai Stuff")]
+    public GameObject Kunai;
+    public GameObject playerHat;
+    public GameObject kunaiPosition;
+    
     void Start()
     {
         attackAction = InputSystem.actions.FindAction("Attack");
         dodgeAction = InputSystem.actions.FindAction("Dodge");
-        kunaiAction = InputSystem.actions.FindAction("Kunai");
+        kunaiAction = InputSystem.actions.FindAction("Hat");
 
         characterController = GetComponent<CharacterController>();
         movementController = GetComponent<NewMovement>();
@@ -56,9 +66,11 @@ public class CombatStateManager : MonoBehaviour
     void Update()
     {
         stateTime += Time.deltaTime;
-
+        if (DodgeCoolDownTimer <= DodgeCoolDown)
+        {
+            DodgeCoolDownTimer += Time.deltaTime;
+        }
         AttackCheck();
-
         currentState.UpdateState(this);
     }
 
@@ -85,6 +97,13 @@ public class CombatStateManager : MonoBehaviour
         }
     }
 
+    private void hatThrow()
+    {
+        AttackAnimator.SetTrigger("Kunai");
+        Instantiate(Kunai, kunaiPosition.transform.position, gameObject.transform.rotation);
+        playerHat.SetActive(false);
+    }
+
     public void SwitchState(CombatState state)
     {
         currentState.ExitState(this);
@@ -99,6 +118,16 @@ public class CombatStateManager : MonoBehaviour
         comboStep = 1;
         attacking = false;
         SwitchState(Melee1);
+    }
+
+    public float GetDamage()
+    {
+        return currentDamage;
+    }
+
+    public float GetShadowCharge()
+    {
+        return shadowCharge;
     }
 
     public void ContinueCombo(CombatState nextState)
