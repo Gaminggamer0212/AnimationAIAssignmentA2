@@ -11,7 +11,7 @@ public class GroundAttack1 : CombatState
     {
         stateManager.currentDamage = damage;
         stateManager.shadowCharge = shadowCharge;
-
+        
         Debug.Log("Melee1");
         stateManager.KatanaEnableAnimator.SetTrigger("Attack1");
         stateManager.AttackAnimator.SetTrigger("Attack1");
